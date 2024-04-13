@@ -1,17 +1,52 @@
-import {useRef, useState} from 'react'
+import { useRef, useState } from 'react'
+import { resetAppCounterPonts } from '../../features/item/itemSlice'
+import { useDispatch } from 'react-redux'
+
 export const Header = () => {
     const optionButRef = useRef(null)
+    const alertRef = useRef(null)
     const [showOptionsBut, setShowOptionsBut] = useState(false)
+    const [showDeleteAlert, setShowDeleteAlert] = useState({})
+
+    const dispatch = useDispatch()
 
     document.body.addEventListener('click', e => {
-        if (e.target != optionButRef.current) {
+        if (e.target != optionButRef.current && e.target != alertRef) {
             setShowOptionsBut(false)
         }
     })
 
+    const resetCountersApp = () => {
+        dispatch(resetAppCounterPonts())
+    }
+
     const resetAppBut = () => {
         localStorage.clear()
         location.reload()
+    }
+
+    const PopupAlert = ({ title, des }) => {
+        return (
+            <div ref={alertRef} className='h-screen w-screen bg-black bg-opacity-40 fixed top-0 left-0 z-50 flex justify-center items-center'>
+                <div className="w-10/12 sm:w-100 shadow rounded-lg bg-white p-3">
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <h2 className="text-base font-medium">{title}</h2>
+                        <button className="focus:outline-none active:bg-gray-300 p-1 rounded-lg bg-gray-100"
+                            onClick={() => setShowDeleteAlert(false)}>
+                            <svg className="w-8 fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"></path></svg>
+                        </button>
+                    </div>
+                    <div className="mb-6 mt-4">
+                        <h3>{des}</h3>
+                    </div>
+                    <div className="mt-4 flex justify-center gap-x-1 2sm:gap-x-2">
+                        <button className="focus:outline-none text-white font-semibold bg-rose-500 active:bg-rose-700 py-3 px-4 rounded-lg">حذف</button>
+                        <button className="focus:outline-none text-gray-700 font-semibold active:bg-gray-300 p-3 rounded-lg bg-gray-100"
+                            onClick={() => setShowDeleteAlert(false)}>الغاء</button>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -25,16 +60,21 @@ export const Header = () => {
                 </a>
                 {
                     showOptionsBut &&
-                    <div className="absolute overflow-hidden w-44 top-[calc(100%-10px)] right-7 z-10 flex flex-col items-start bg-white divide-y divide-gray-100 rounded-lg shadow">
-                        <button className="flex gap-x-2 px-3 items-center whitespace-nowrap text-lg font-semibold w-full text-right h-10 active:bg-gray-100 text-gray-700" onClick={resetAppBut}>
-                            اعادة الضبط
+                    <div className="absolute overflow-hidden py-4 w-44 top-[calc(100%-10px)] right-7 z-10 flex flex-col items-start bg-white divide-y divide-gray-100 rounded-lg shadow">
+                        <button className="flex gap-x-2 px-3 items-center whitespace-nowrap text-lg font-semibold w-full text-right h-10 active:bg-gray-100 text-gray-700"
+                        onClick={() => resetCountersApp()}>
+                            اعادة ضبط الارقام
                         </button>
-                        <button className="flex gap-x-2 px-3 items-center whitespace-nowrap text-lg font-semibold w-full text-right h-10 active:bg-gray-100 text-gray-700">
+                        <button className="flex gap-x-2 px-3 items-center whitespace-nowrap text-lg font-semibold w-full text-right h-10 active:bg-gray-100 text-rose-700"
+                            onClick={resetAppBut}>
+                            اعادة الضبط البرنامج
+                        </button>
+                        {/* <button className="flex gap-x-2 px-3 items-center whitespace-nowrap text-lg font-semibold w-full text-right h-10 active:bg-gray-100 text-gray-700">
                             السجل
-                        </button>
+                        </button> */}
                     </div>
-                }
 
+                }
 
             </main>
         </header>
